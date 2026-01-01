@@ -13,4 +13,4 @@ See the [SDK README](sdk/README.md) for installation and usage instructions.
 
 ## License
 
-MIT License - see [LICENSE](sdk/LICENSE) for details.
+Apache License 2.0 - see [LICENSE](sdk/LICENSE) for details.
