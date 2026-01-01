@@ -7,7 +7,7 @@ on:
 
 jobs:
   test:
-    name: Test
+    name: Test before release
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18,19 +18,24 @@ jobs:
           php-version: '8.3'
           tools: composer:v2
 
-      - name: Install dependencies
+      - name: Install SDK dependencies
+        working-directory: sdk
         run: composer install --prefer-dist --no-progress
 
       - name: Run linting
+        working-directory: sdk
         run: composer lint
 
       - name: Run static analysis
+        working-directory: sdk
         run: composer analyze
 
       - name: Run unit tests
+        working-directory: sdk
         run: composer test:unit
 
       - name: Run integration tests
+        working-directory: sdk
         env:
           ALLSCREENSHOTS_API_KEY: ${{ secrets.ALLSCREENSHOTS_API_KEY }}
         run: composer test:integration
@@ -53,52 +58,37 @@ jobs:
           tools: composer:v2
 
       - name: Validate composer.json
+        working-directory: sdk
         run: composer validate --strict
 
-      - name: Install dependencies (production)
+      - name: Install SDK dependencies (production)
+        working-directory: sdk
         run: composer install --prefer-dist --no-progress --no-dev
 
       - name: Get version from tag
         id: version
-        run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
-
-      - name: Generate changelog
-        id: changelog
-        run: |
-          # Get commits since last tag
-          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
-          if [ -n "$PREV_TAG" ]; then
-            CHANGELOG=$(git log --pretty=format:"- %s" $PREV_TAG..HEAD)
-          else
-            CHANGELOG=$(git log --pretty=format:"- %s")
-          fi
-          echo "changelog<<EOF" >> $GITHUB_OUTPUT
-          echo "$CHANGELOG" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
 
       - name: Create release archive
+        working-directory: sdk
         run: |
           mkdir -p dist
-          zip -r dist/allscreenshots-sdk-php-${{ steps.version.outputs.version }}.zip . \
+          zip -r dist/allscreenshots-sdk-php-${{ steps.version.outputs.VERSION }}.zip . \
             -x ".git/*" -x "tests/*" -x ".github/*" -x "dist/*" -x ".phpunit.cache/*"
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
-          name: v${{ steps.version.outputs.version }}
+          name: v${{ steps.version.outputs.VERSION }}
+          generate_release_notes: true
           body: |
-            ## Allscreenshots PHP SDK v${{ steps.version.outputs.version }}
-
-            ### Changes
-            ${{ steps.changelog.outputs.changelog }}
-
-            ### Installation
+            ## Installation
 
             ```bash
-            composer require allscreenshots/sdk:${{ steps.version.outputs.version }}
+            composer require allscreenshots/sdk:${{ steps.version.outputs.VERSION }}
             ```
           files: |
-            dist/allscreenshots-sdk-php-${{ steps.version.outputs.version }}.zip
+            sdk/dist/allscreenshots-sdk-php-${{ steps.version.outputs.VERSION }}.zip
           draft: false
           prerelease: false
         env:
