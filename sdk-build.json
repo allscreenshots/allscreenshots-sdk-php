@@ -1,0 +1,20 @@
+{
+  "language": "php",
+  "build": [
+    [
+      "composer",
+      "install",
+      "--no-interaction",
+      "--no-dev"
+    ],
+    [
+      "php",
+      "-l",
+      "sample-app/worker.php"
+    ]
+  ],
+  "run": [
+    "php",
+    "sample-app/worker.php"
+  ]
+}
