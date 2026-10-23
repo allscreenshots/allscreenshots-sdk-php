@@ -1,14 +1,15 @@
 {
   "name": "allscreenshots/sdk",
-  "description": "Capture websites, manage jobs, compose images, schedule captures, crawl sites, and read usage.",
+  "description": "Official PHP SDK for the Allscreenshots screenshot API: capture websites, manage jobs, compose images, schedule captures, crawl sites, and read usage.",
   "keywords": [
-    "openapitools",
-    "openapi-generator",
-    "openapi",
-    "php",
+    "allscreenshots",
+    "screenshot",
+    "screenshot-api",
+    "website-screenshot",
+    "web-capture",
     "sdk",
-    "rest",
-    "api"
+    "api-client",
+    "php"
   ],
   "homepage": "https://allscreenshots.com",
   "license": "Apache-2.0",
@@ -39,5 +40,11 @@
     "psr-4": {
       "Allscreenshots\\Sdk\\Test\\": "test/"
     }
+  },
+  "support": {
+    "homepage": "https://allscreenshots.com",
+    "docs": "https://docs.allscreenshots.com",
+    "issues": "https://github.com/allscreenshots/allscreenshots-sdk-php/issues",
+    "source": "https://github.com/allscreenshots/allscreenshots-sdk-php"
   }
 }
